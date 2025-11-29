@@ -4,6 +4,14 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,6 +22,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -99,15 +108,34 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
+    <>
+      <AlertDialog open={showDisclaimer} onOpenChange={setShowDisclaimer}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-display">Disclaimer</AlertDialogTitle>
+            <AlertDialogDescription className="text-base leading-relaxed pt-4">
+              This application provides ideas to help improve your business and clarify your doubts. 
+              All advice provided is for informational purposes only. The company is not responsible 
+              for any issues or outcomes that may arise. You choose to follow any advice at your own risk.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button 
+              onClick={() => setShowDisclaimer(false)}
+              className="w-full sm:w-auto"
+            >
+              I Accept
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
       <div className="bg-card rounded-t-xl border border-border p-6 shadow-lg">
         <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
           BlueBridge AI
         </h1>
         <p className="text-muted-foreground mt-1">Your Business Advisor and Analyst</p>
-        <p className="text-xs text-muted-foreground/70 mt-3 leading-relaxed">
-          <span className="font-semibold">Disclaimer:</span> This application provides ideas to help improve your business and clarify your doubts. All advice provided is for informational purposes only. The company is not responsible for any issues or outcomes that may arise. You choose to follow any advice at your own risk.
-        </p>
       </div>
 
       <ScrollArea className="flex-1 bg-card border-x border-border p-6">
@@ -173,5 +201,6 @@ export const ChatInterface = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
