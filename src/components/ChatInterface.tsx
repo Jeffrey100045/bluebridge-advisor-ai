@@ -105,6 +105,9 @@ export const ChatInterface = () => {
           BlueBridge AI
         </h1>
         <p className="text-muted-foreground mt-1">Your Business Advisor and Analyst</p>
+        <p className="text-xs text-muted-foreground/70 mt-3 leading-relaxed">
+          <span className="font-semibold">Disclaimer:</span> This application provides ideas to help improve your business and clarify your doubts. All advice provided is for informational purposes only. The company is not responsible for any issues or outcomes that may arise. You choose to follow any advice at your own risk.
+        </p>
       </div>
 
       <ScrollArea className="flex-1 bg-card border-x border-border p-6">
