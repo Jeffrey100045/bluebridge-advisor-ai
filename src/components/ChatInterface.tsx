@@ -2,8 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -25,12 +28,38 @@ export const ChatInterface = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user, signOut, messageCount, hasUnlimitedMessages, refreshMessageCount } = useAuth();
+  const navigate = useNavigate();
+
+  const messagesRemaining = Math.max(0, 5 - messageCount);
+  const canSendMessage = hasUnlimitedMessages || messageCount < 5;
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
+    if (!canSendMessage) {
+      toast({
+        title: 'Message limit reached',
+        description: 'Please upgrade to premium for unlimited messages.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Increment message count
+    if (user && !hasUnlimitedMessages) {
+      const { error } = await supabase
+        .from('message_usage')
+        .update({ message_count: messageCount + 1 })
+        .eq('user_id', user.id);
+
+      if (!error) {
+        await refreshMessageCount();
+      }
+    }
+
     const newUserMessage: Message = { role: 'user', content: userMessage };
     const updatedMessages = [...messages, newUserMessage];
     setMessages(updatedMessages);
@@ -132,10 +161,34 @@ export const ChatInterface = () => {
 
       <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
       <div className="bg-card rounded-t-xl border border-border p-6 shadow-lg">
-        <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-          BlueBridge AI
-        </h1>
-        <p className="text-muted-foreground mt-1">Your Business Advisor and Analyst</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+              BlueBridge AI
+            </h1>
+            <p className="text-muted-foreground mt-1">Your Business Advisor and Analyst</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {user && (
+              <>
+                {!hasUnlimitedMessages && (
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Messages: </span>
+                    <span className="font-medium">
+                      {messagesRemaining} remaining
+                    </span>
+                  </div>
+                )}
+                <Button variant="outline" size="sm" onClick={() => navigate('/pricing')}>
+                  {hasUnlimitedMessages ? 'Premium' : 'Upgrade'}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  Sign Out
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       <ScrollArea className="flex-1 bg-card border-x border-border p-6">
@@ -181,18 +234,33 @@ export const ChatInterface = () => {
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-b-xl border border-border p-4 shadow-lg">
+      <form onSubmit={handleSubmit} className="bg-card rounded-b-xl border border-t-0 border-border p-4 shadow-lg">
+        {!canSendMessage && (
+          <div className="mb-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2 text-sm">
+            <Lock className="h-4 w-4 text-destructive" />
+            <span className="text-destructive font-medium">
+              You've reached your free message limit. Upgrade to premium for unlimited access.
+            </span>
+            <Button 
+              size="sm" 
+              onClick={() => navigate('/pricing')}
+              className="ml-auto"
+            >
+              View Plans
+            </Button>
+          </div>
+        )}
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything about business..."
-            disabled={isLoading}
+            placeholder={canSendMessage ? "Ask me anything about your business..." : "Upgrade to continue chatting..."}
+            disabled={isLoading || !canSendMessage}
             className="flex-1 bg-background"
           />
           <Button
             type="submit"
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !input.trim() || !canSendMessage}
             size="icon"
             className="bg-primary hover:bg-primary/90"
           >
