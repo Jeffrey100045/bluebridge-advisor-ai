@@ -104,7 +104,7 @@ export const ChatInterface = () => {
         <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
           BlueBridge AI
         </h1>
-        <p className="text-muted-foreground mt-1">Business Advisor & Auditor</p>
+        <p className="text-muted-foreground mt-1">Your Business Advisor and Analyst</p>
       </div>
 
       <ScrollArea className="flex-1 bg-card border-x border-border p-6">
