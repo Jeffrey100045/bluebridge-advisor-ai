@@ -25,7 +25,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user, signOut, messageCount, hasUnlimitedMessages, refreshMessageCount } = useAuth();
@@ -37,6 +37,23 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (user) {
+      const disclaimerKey = `disclaimer_accepted_${user.id}`;
+      const hasAccepted = localStorage.getItem(disclaimerKey);
+      if (!hasAccepted) {
+        setShowDisclaimer(true);
+      }
+    }
+  }, [user]);
+
+  const handleAcceptDisclaimer = () => {
+    if (user) {
+      localStorage.setItem(`disclaimer_accepted_${user.id}`, 'true');
+    }
+    setShowDisclaimer(false);
+  };
 
   const streamChat = async (userMessage: string) => {
     if (!canSendMessage) {
@@ -150,7 +167,7 @@ export const ChatInterface = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <Button 
-              onClick={() => setShowDisclaimer(false)}
+              onClick={handleAcceptDisclaimer}
               className="w-full sm:w-auto"
             >
               I Accept
