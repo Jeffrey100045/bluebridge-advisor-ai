@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 const AboutUs = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 dark:from-blue-50/5 dark:via-background dark:to-blue-50/5">
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 dark:from-blue-50/5 dark:via-background dark:to-blue-50/5 flex flex-col">
+      <div className="flex-1 container mx-auto px-4 py-16 max-w-4xl">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
@@ -57,7 +58,7 @@ const AboutUs = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">•</span>
-                  <span><strong>Affordable Pricing:</strong> Start free with 5 messages per day, upgrade for unlimited access</span>
+                  <span><strong>Affordable Pricing:</strong> Start free with 25 messages per day, upgrade for unlimited access</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">•</span>
@@ -89,6 +90,8 @@ const AboutUs = () => {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
