@@ -31,8 +31,8 @@ export const ChatInterface = () => {
   const { user, signOut, messageCount, hasUnlimitedMessages, refreshMessageCount } = useAuth();
   const navigate = useNavigate();
 
-  const messagesRemaining = Math.max(0, 5 - messageCount);
-  const canSendMessage = hasUnlimitedMessages || messageCount < 5;
+  const messagesRemaining = Math.max(0, 25 - messageCount);
+  const canSendMessage = hasUnlimitedMessages || messageCount < 25;
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
