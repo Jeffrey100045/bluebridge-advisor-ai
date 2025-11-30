@@ -35,7 +35,7 @@ const Pricing = () => {
               <ul className="space-y-3">
                 <li className="flex items-center gap-2">
                   <Check className="h-5 w-5 text-green-600" />
-                  <span>5 messages total</span>
+                  <span>5 messages per day</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="h-5 w-5 text-green-600" />
@@ -67,7 +67,7 @@ const Pricing = () => {
               <CardTitle className="text-2xl">Premium</CardTitle>
               <CardDescription>Unlimited access for serious businesses</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">$29</span>
+                <span className="text-4xl font-bold">$10</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
             </CardHeader>
